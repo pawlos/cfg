@@ -5,4 +5,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.11.2" />
+  </ItemGroup>
+
 </Project>
