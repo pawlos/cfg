@@ -28,4 +28,4 @@ Example:
 >  `./cfg.exe Mono.Cecil.dll Mono.Cecil.MetadataBuilder.AddCustomDebugInformations | dot -Tpng -o cfg-add-custom-debug-informations.png`
 
 
-[](cfg-add-custom-debug-informations.png)
+![Generated control flow graph](cfg-add-custom-debug-informations.png)
