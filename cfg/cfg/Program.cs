@@ -35,7 +35,7 @@ namespace cfg
     class Program
     {
         static void PrintBB(Instruction leader, IEnumerable<Instruction> opCodes) =>
-            Console.WriteLine($@"IL_{leader.Offset:X4} [label=""{opCodes.Select(x => x.ToString()).Aggregate((x, y) => x + "\\l" + y)}""]");
+            Console.WriteLine($@"IL_{leader.Offset:X4} [label=""{opCodes.Select(x => x.ToString().Replace(@"""",@"\""")).Aggregate((x, y) => x + "\\l" + y)}""]");
 
         static void PrintEdge(Instruction leader, Instruction nextLeader)
         {
