@@ -29,3 +29,6 @@ Example:
 
 
 ![Generated control flow graph](cfg-add-custom-debug-informations.png)
+
+
+[![Hits-of-Code](https://hitsofcode.com/github/pawlos/cfg)](https://hitsofcode.com/view/github/pawlos/cfg)
