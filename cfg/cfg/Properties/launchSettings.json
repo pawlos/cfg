@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "cfg": {
+      "commandName": "Project",
+      "commandLineArgs": "Mono.Cecil.dll Mono.Cecil.MetadataBuilder.AddCustomDebugInformations"
+    }
+  }
+}
