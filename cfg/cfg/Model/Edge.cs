@@ -1,6 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 
-namespace cfg;
+namespace cfg.Model;
 
 class Edge
 {

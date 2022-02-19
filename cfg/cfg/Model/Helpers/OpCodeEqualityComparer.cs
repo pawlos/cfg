@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Mono.Cecil.Cil;
 
-namespace cfg;
+namespace cfg.Model.Helpers;
 
 class OpCodeEqualityComparer : IEqualityComparer<Instruction>
 {

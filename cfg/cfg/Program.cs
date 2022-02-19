@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil.Cil;
 using AssemblyDefinition = Mono.Cecil.AssemblyDefinition;
+using cfg.Formatters;
+using cfg.Model;
+using cfg.Model.Helpers;
 
 namespace cfg;
 
 class Program
 {
-    static void PrintBB(Instruction leader, IEnumerable<Instruction> opCodes) =>
-        Console.WriteLine($@"IL_{leader.Offset:X4} [label=""{opCodes.Select(x => x.ToString().Replace(@"""", @"\""")).Aggregate((x, y) => x + "\\l" + y)}""]");
+    static void PrintBB(IFormatter formatter, Instruction leader, IEnumerable<Instruction> opCodes) =>
+        formatter.PrintBB(leader, opCodes);
 
-    static void PrintEdge(Instruction leader, Instruction nextLeader)
+    static void PrintEdge(IFormatter formatter, Instruction leader, Instruction nextLeader)
     {
-        var headPort = "";
-        Console.WriteLine($"IL_{leader.Offset:X4} -> IL_{nextLeader.Offset:X4}{headPort}");
+        formatter.PrintEdge(leader, nextLeader);
     }
 
     static int Main(string[] args)
@@ -29,6 +31,7 @@ class Program
         if (location.Length < 3)
         {
             Console.WriteLine("[-] Please provide full path to the method - Namespace.Class.Method[:n]");
+            Console.WriteLine("[i] If there are more than one method with the same name add an index [:n]");
             return -2;
         }
 
@@ -48,8 +51,9 @@ class Program
         var targetMethod = definition.MainModule.Types.First(x => x.Namespace == namespaceName && x.Name == className).Methods
             .Where(x => x.Name == methodName).Skip(skip).First();
 
-        Console.WriteLine("digraph CFG {");
-        Console.WriteLine("node [shape=box]");
+        IFormatter dotFormatter = new dotFormatter(s=>Console.WriteLine(s));
+
+        dotFormatter.PrintHeader();
         //first instruction is always a leader
         var leadersToVisit = new List<Instruction> { targetMethod.Body.Instructions.First() };
         var edges = new List<Edge>();
@@ -94,20 +98,20 @@ class Program
                 .TakeWhile(x => x.Offset < nextLeader.Offset)
                 .ToArray();
             reverseLeadersBBs.Add(bb, leader);
-            PrintBB(leader, bb);
+            PrintBB(dotFormatter, leader, bb);
         }
 
         var lastLeader = distinctLeaders.Last();
         var lastLeaderBB = targetMethod.Body.Instructions.SkipWhile(x => x.Offset < lastLeader.Offset).ToArray();
-        PrintBB(lastLeader, lastLeaderBB);
+        PrintBB(dotFormatter, lastLeader, lastLeaderBB);
         reverseLeadersBBs.Add(lastLeaderBB, lastLeader);
         foreach (var edge in edges)
         {
             var leader = reverseLeadersBBs.First(x => x.Key.Select(y => y.Offset)
                                                         .Contains(edge.From.Offset)).Value;
-            PrintEdge(leader, edge.To);
+            PrintEdge(dotFormatter, leader, edge.To);
         }
-        Console.WriteLine("}");
+        dotFormatter.PrintFooter();
         return 0;
     }
 }
