@@ -51,9 +51,9 @@ class Program
         var targetMethod = definition.MainModule.Types.First(x => x.Namespace == namespaceName && x.Name == className).Methods
             .Where(x => x.Name == methodName).Skip(skip).First();
 
-        IFormatter dotFormatter = new dotFormatter(s=>Console.WriteLine(s));
+        IFormatter formatter = new dotFormatter(Console.WriteLine);
 
-        dotFormatter.PrintHeader();
+        formatter.PrintHeader();
         //first instruction is always a leader
         var leadersToVisit = new List<Instruction> { targetMethod.Body.Instructions.First() };
         var edges = new List<Edge>();
@@ -98,20 +98,20 @@ class Program
                 .TakeWhile(x => x.Offset < nextLeader.Offset)
                 .ToArray();
             reverseLeadersBBs.Add(bb, leader);
-            PrintBB(dotFormatter, leader, bb);
+            PrintBB(formatter, leader, bb);
         }
 
         var lastLeader = distinctLeaders.Last();
         var lastLeaderBB = targetMethod.Body.Instructions.SkipWhile(x => x.Offset < lastLeader.Offset).ToArray();
-        PrintBB(dotFormatter, lastLeader, lastLeaderBB);
+        PrintBB(formatter, lastLeader, lastLeaderBB);
         reverseLeadersBBs.Add(lastLeaderBB, lastLeader);
         foreach (var edge in edges)
         {
             var leader = reverseLeadersBBs.First(x => x.Key.Select(y => y.Offset)
                                                         .Contains(edge.From.Offset)).Value;
-            PrintEdge(dotFormatter, leader, edge.To);
+            PrintEdge(formatter, leader, edge.To);
         }
-        dotFormatter.PrintFooter();
+        formatter.PrintFooter();
         return 0;
     }
 }
